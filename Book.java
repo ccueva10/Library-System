@@ -3,20 +3,24 @@ import java.util.UUID;
 public class Book {
     private String ISBN;
     private String title;
-    private Author author;
-    private Genre genre;
+    private String author;
+    private String genre;
     private boolean available;
     
-    public Book(String ISBN, String title, Author author, Genre genre) {
-        this.ISBN = makeISBN();
+    public Book(String ISBN, String title, String author, String genre) {
+        this.ISBN = UUID.randomUUID().toString();
         this.title = title;
         this.author = author;
         this.genre = genre;
         this.available = true;
     }
+}
+    public String getISBN() {
+        return ISBN;
+    }
     
-     private String makeISBN() {
-        return UUID.randomUUID().toString();
+    public void setISBN(String ISBN) {
+        this.ISBN = ISBN;
     }
     
     public String getTitle() {
