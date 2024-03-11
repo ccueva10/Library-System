@@ -12,7 +12,8 @@ If you are using an IDE like Eclipse:
 ## Key Features
 **Book Management:** Creates, updates, and deletes books. Manages book availability and tracks book details such as ISBN, title, author, and genre.  
 
-**Patron Management:**
+**Patron Management:** 
+Defines patrons and separates them into students and faculty. Patrons have ID, name, contact info, and borrowing history. Students can borrow a smaller amount of books than faculty and students have a year of graduation
 
 **Transaction Management:**     
 
