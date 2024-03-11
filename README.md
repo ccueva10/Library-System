@@ -10,12 +10,12 @@ If you are using an IDE like Eclipse:
 2. Import the project into your IDE.
 
 ## Key Features
-Book Management:  
+**Book Management:** Create, update, and delete books. Manage book availability and track book details such as ISBN, title, author, and genre.  
 
-Patron Management:  
+**Patron Management:**
 
-Transaction Management:  
+**Transaction Management:**     
 
-Library Management:  
+**Library Management:**     
 
-User Interface:  
+**User Interface:**     
