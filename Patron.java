@@ -80,7 +80,7 @@ class Faculty extends Patron {
 	
     public Faculty(UUID id, String name, String contactInfo) {
         super(id, name, contactInfo);
-        this.maxBooksAllowed = 20;
+        this.maxBooksAllowed = 50;
     }
     
     public int getMaxBooks() {
