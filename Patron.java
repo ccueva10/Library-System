@@ -71,14 +71,12 @@ class Student extends Patron {
     public int getMaxBooks() {
         return maxBooksAllowed;
     }
-
-    // Need to add more privileges/restrictions
 }
 
 class Faculty extends Patron {
 	private int maxBooksAllowed;
 	
-    public Faculty(UUID id, String name, String contactInfo) {
+    public Faculty(UUID id, String name, String contactInfo, int maxBooksAllowed) {
         super(id, name, contactInfo);
         this.maxBooksAllowed = 50;
     }
@@ -86,6 +84,4 @@ class Faculty extends Patron {
     public int getMaxBooks() {
     	return maxBooksAllowed;
     }
-
-    // Need to add more privileges/restrictions
 }
