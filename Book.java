@@ -6,7 +6,8 @@ public class Book {
     private String author;
     private String genre;
     private boolean available;
-    
+
+    // Constructor
     public Book(String ISBN, String title, String author, String genre) {
         this.ISBN = UUID.randomUUID().toString();
         this.title = title;
@@ -15,6 +16,7 @@ public class Book {
         this.available = true;
     }
 }
+    // Getters and setters
     public String getISBN() {
         return ISBN;
     }
@@ -56,6 +58,7 @@ public class Book {
     }
 }
 
+// Subclass for fiction book
 class FictionBook extends Book {
     private String fictionType;
     
@@ -73,6 +76,7 @@ class FictionBook extends Book {
     }
 }
 
+// Subclass for nonfiction book
 class NonFictionBook extends Book {
     private String nonFicType;
 
