@@ -8,6 +8,5 @@ Make sure you have Java installed on your system.
 If you are using an IDE like Eclipse:
 1. Clone the project or download the ZIP file.
 2. Import the project into your IDE.
-3. Run the `Calculator` class.
 
 ## Usage
