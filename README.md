@@ -9,4 +9,13 @@ If you are using an IDE like Eclipse:
 1. Clone the project or download the ZIP file.
 2. Import the project into your IDE.
 
-## Usage
+## Key Features
+Book Management:  
+
+Patron Management:  
+
+Transaction Management:  
+
+Library Management:  
+
+User Interface:  
