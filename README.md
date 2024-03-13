@@ -14,7 +14,7 @@ If you are using an IDE like Eclipse:
 Creates, updates, and deletes books. Manages book availability and tracks book details such as ISBN, title, author, and genre. Overall, Book Management plays a role in managing various types of books through providing efficient organization and the retrieval of information.
 
 **Patron Management:** 
-Defines patrons and separates them into students and faculty. Patrons have ID, name, contact info, and borrowing history. Students can borrow a smaller amount of books than faculty and students have a year of graduation
+Defines patrons and separates them into students and faculty. Patrons have ID, name, contact info, and borrowing history. Students can borrow a smaller amount of books than faculty and students have a year of graduation.
 
 **Transaction Management:** 
 Transaction Management in the library management system handles the borrowing and returning of books by patrons. Overall, Transaction Management plays a crucial role in ensuring the smooth operation of the library management system by accurately recording and managing the borrowing and returning of books by patrons.
