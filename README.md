@@ -1,5 +1,5 @@
 # Library-System
-A library management system that allows librarians to manage books, patrons, and transactions effectively. The system provides functionalities for adding, removing, and updating books and patrons, as well as checking out and returning books.
+This project is a library management system designed to assist librarians in effectively managing books, patrons, and transactions. It provides functionalities for adding, removing, and updating books and patrons, as well as checking out and returning books.
 ## Getting Started
 ### Prerequisites
 Make sure you have Java installed on your system.
