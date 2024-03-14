@@ -23,4 +23,4 @@ Transaction Management in the library management system handles the borrowing an
 Manages overall library operations including adding/removing books, registering patrons, and handling transactions. In summary, the Library Management class plays a pivotal role in streamlining library operations, ensuring efficient resource utilization, and enhancing user experience through comprehensive book and patron management, transaction handling, and seamless integration with the user interface.
 
 **User Interface:**     
- Provides a console-based or GUI interface to interact with the library management system. Enables librarians to perform tasks such as adding books, registering patrons, checking out books, and returning books.
+ Provides a console-based interface to interact with the library management system. Enables librarians to perform tasks such as adding books, registering patrons, checking out books, and returning books.
