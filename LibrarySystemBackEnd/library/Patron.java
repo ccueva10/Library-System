@@ -1,87 +1,98 @@
+package library;
+
 import java.util.ArrayList;
 import java.util.UUID;
 
 class Patron {
-    private UUID id;
-    private String name;
-    private String contactInfo;
-    private ArrayList<Book> borrowHistory;
+	private UUID id;
+	private String name;
+	private String contactInfo;
+	ArrayList<Book> borrowHistory;
 
-    public Patron(UUID id, String name, String contactInfo) {
-        this.id = UUID.randomUUID();
-        this.name = name;
-        this.contactInfo = contactInfo;
-        this.borrowHistory = new ArrayList<>();
-    }
+	public Patron() {
+		this.id = UUID.randomUUID();
+		this.name = "";
+		this.contactInfo = "";
+	}
 
-    public void addBorrowHistory(Book book) {
-        borrowHistory.add(book);
-    }
+	public Patron(UUID id, String name, String contactInfo) {
+		this.id = UUID.randomUUID();
+		this.name = name;
+		this.contactInfo = contactInfo;
+		this.borrowHistory = new ArrayList<>();
+	}
 
-    public void displayBorrowHistory() {
-        System.out.println("Borrowing History for " + name + ":");
-        for (Book book : borrowHistory) {
-            System.out.println(book.getTitle());
-        }
-    }
+	public void addBorrowHistory(Book book) {
+		borrowHistory.add(book);
+	}
 
-    public UUID getId() {
-        return id;
-    }
+	public void removeBorrowHistory(Book book) {
+		borrowHistory.remove(book);
+	}
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
+	public void displayBorrowHistory() {
+		System.out.println("Borrowing History for " + name + ":");
+		for (Book book : borrowHistory) {
+			System.out.println(book.getTitle());
+		}
+	}
 
-    public String getName() {
-        return name;
-    }
+	public UUID getId() {
+		return id;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setId(UUID id) {
+		this.id = id;
+	}
 
-    public String getContactInfo() {
-        return contactInfo;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setContactInfo(String contactInfo) {
-        this.contactInfo = contactInfo;
-    }
-}
+	public void setName(String name) {
+		this.name = name;
+	}
 
-class Student extends Patron {
-    private int yearOfGrad;
-    private int maxBooksAllowed;
+	public String getContactInfo() {
+		return contactInfo;
+	}
 
-    public Student(UUID id, String name, String contactInfo, int yearOfGrad, int maxBooksAllowed) {
-        super(id, name, contactInfo);
-        this.yearOfGrad = yearOfGrad;
-        this.maxBooksAllowed = 10;
-    }
+	public void setContactInfo(String contactInfo) {
+		this.contactInfo = contactInfo;
+	}
 
-    public int getYearOfGrad() {
-        return yearOfGrad;
-    }
+	class Student extends Patron {
+		private int yearOfGrad;
+		private final int MAX_BOOKS_ALLOWED = 10;
 
-    public void setYearOfGrad(int yearOfGrad) {
-        this.yearOfGrad = yearOfGrad;
-    }
+		public Student(UUID id, String name, String contactInfo, int yearOfGrad) {
+			super(id, name, contactInfo);
+			this.yearOfGrad = yearOfGrad;
 
-    public int getMaxBooks() {
-        return maxBooksAllowed;
-    }
-}
+		}
+
+		public int getYearOfGrad() {
+			return yearOfGrad;
+		}
+
+		public void setYearOfGrad(int yearOfGrad) {
+			this.yearOfGrad = yearOfGrad;
+		}
+
+		public int getMaxBooks() {
+			return MAX_BOOKS_ALLOWED;
+		}
+	}
 
 class Faculty extends Patron {
-	private int maxBooksAllowed;
-	
-    public Faculty(UUID id, String name, String contactInfo, int maxBooksAllowed) {
-        super(id, name, contactInfo);
-        this.maxBooksAllowed = 50;
-    }
-    
-    public int getMaxBooks() {
-    	return maxBooksAllowed;
-    }
+	private final int MAX_BOOKS_ALLOWED = 50;
+
+	public Faculty(UUID id, String name, String contactInfo) {
+		super(id, name, contactInfo);
+		
+	}
+
+	public int getMaxBooks() {
+		return MAX_BOOKS_ALLOWED;
+	}
 }

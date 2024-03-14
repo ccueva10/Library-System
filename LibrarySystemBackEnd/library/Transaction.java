@@ -1,39 +1,41 @@
+package library;
+
 import java.time.LocalDate;
 
 // Transaction class
 public class Transaction {
-    private Book book;
-    private Patron patron;
-    private LocalDate checkoutDate;
-    private LocalDate returnDate;
+	private Book book;
+	private Patron patron;
+	private LocalDate checkoutDate;
+	private LocalDate returnDate;
 
-    // Constructor
-    public Transaction(Book book, Patron patron) {
-        this.book = book;
-        this.patron = patron;
-        this.checkoutDate = LocalDate.now(); 
-        this.returnDate = null; // 
-    }
+	// Constructor
+	public Transaction(Book book, Patron patron) {
+		this.book = book;
+		this.patron = patron;
+		this.checkoutDate = LocalDate.now();
+		this.returnDate = checkoutDate.plusDays(14); //
+	}
 
-    // Getters and setters
-    public Book getBook() {
-        return book;
-    }
+	// Getters and setters
+	public Book getBook() {
+		return book;
+	}
 
-    public Patron getPatron() {
-        return patron;
-    }
+	public Patron getPatron() {
+		return patron;
+	}
 
-    public LocalDate getCheckoutDate() {
-        return checkoutDate;
-    }
+	public LocalDate getCheckoutDate() {
+		return checkoutDate;
+	}
 
-    public LocalDate getReturnDate() {
-        return returnDate;
-    }
+	public LocalDate getReturnDate() {
+		return returnDate;
+	}
 
-    // Method to mark the book as returned
-    public void markAsReturned() {
-        this.returnDate = LocalDate.now(); // Set the return date to the current date
-    }
+	// Method to mark the book as returned
+	public void markAsReturned() {
+		this.returnDate = LocalDate.now(); // Set the return date to the current date
+	}
 }
