@@ -11,7 +11,7 @@ public class Book {
 
 	// Constructor
 	public Book(String ISBN, String title, String author, String genre) {
-		this.ISBN = UUID.randomUUID().toString();
+		this.ISBN = ISBN;
 		this.title = title;
 		this.author = author;
 		this.genre = genre;
