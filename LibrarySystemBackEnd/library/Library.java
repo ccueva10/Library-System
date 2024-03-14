@@ -23,6 +23,7 @@ class Library {
 	}
 
 	public void registerPatron(Patron patron) {
+		patrons.add(patron);
 	}
 
 	public void removePatron(Patron patron) {
@@ -40,7 +41,9 @@ class Library {
 		return null;
 	}
 
-	public Transaction returnBook(Patron patron, Book book) {
+	public Transaction returnBook(Patron patron, String ISBN) {
+        Book book = findBookByISBN(ISBN);
+        
 		if (!book.isAvailable() && patron.borrowHistory.contains(book)) {
 			book.setAvailable(true);
 			patron.removeBorrowHistory(book);
@@ -62,7 +65,7 @@ class Library {
 
 	public Patron findPatronByName(String name) {
 		for (Patron patron : patrons) {
-			if (patron.getName().equals(name)) {
+			if (patron.getName().equalsIgnoreCase(name)) {
 				return patron;
 			}
 		}
