@@ -1,11 +1,15 @@
 package library;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Scanner;
 import java.util.UUID;
 
 public class LibraryManagementSystemUI {
 	private final Library library;
 	private final Scanner scanner;
+	private static final String url = "/Library-System/LibrarySystemBackEnd/library/sqlite-jdbc-3.7.2.jar";
 
 	public LibraryManagementSystemUI() {
 		this.library = new Library();
@@ -20,7 +24,8 @@ public class LibraryManagementSystemUI {
 		System.out.println("4. Remove Patron");
 		System.out.println("5. Checkout Book");
 		System.out.println("6. Return Book");
-		System.out.println("7. Exit");
+		System.out.println("7. Enter BiblioConnect");
+		System.out.println("8. Exit");
 	}
 
 	public void start() {
@@ -29,7 +34,7 @@ public class LibraryManagementSystemUI {
 			displayMenu();
 			System.out.print("Enter your choice: ");
 			choice = scanner.nextInt();
-			scanner.nextLine(); 
+			scanner.nextLine();
 
 			switch (choice) {
 			case 1:
@@ -51,51 +56,64 @@ public class LibraryManagementSystemUI {
 				returnBook();
 				break;
 			case 7:
+				connect();
+				break;
+			case 8:
 				System.out.println("Exiting...");
 				break;
 			default:
 				System.out.println("Invalid choice. Please try again.");
 			}
-		} while (choice != 7);
+		} while (choice != 8);
+	}
+
+	private Connection connect() {
+		Connection conn = null;
+		try {
+			conn = DriverManager.getConnection(url);
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+		return conn;
 	}
 
 	private void addBook() {
-	    String ISBN, title, author, genre;
+		String ISBN, title, author, genre;
 
-		while(true) {
-		System.out.print("Enter ISBN: ");
-		ISBN = scanner.nextLine();
-		System.out.print("Enter Title: ");
-		title = scanner.nextLine();
-		System.out.print("Enter Author: ");
-		author = scanner.nextLine();
-		System.out.print("Enter Genre: ");
-		genre = scanner.nextLine();
-		System.out.print("Is the book fiction or non-fiction? (Enter 'fiction' or 'nonfiction'): ");
-		String bookType = scanner.nextLine();
+		while (true) {
+			System.out.print("Enter ISBN: ");
+			ISBN = scanner.nextLine();
+			System.out.print("Enter Title: ");
+			title = scanner.nextLine();
+			System.out.print("Enter Author: ");
+			author = scanner.nextLine();
+			System.out.print("Enter Genre: ");
+			genre = scanner.nextLine();
+			System.out.print("Is the book fiction or non-fiction? (Enter 'fiction' or 'nonfiction'): ");
+			String bookType = scanner.nextLine();
 
-		if (bookType.equalsIgnoreCase("fiction")) {
-			System.out.print("Enter Fiction Type: ");
-			String fictionType = scanner.nextLine();
-			FictionBook book = new FictionBook(ISBN, title, author, genre, fictionType);
-			library.addBook(book);
-			break;
-		} else if (bookType.equalsIgnoreCase("nonfiction")) {
-			System.out.print("Enter Non-Fiction Type: ");
-			String nonFicType = scanner.nextLine();
-			NonFictionBook book = new NonFictionBook(ISBN, title, author, genre, nonFicType);
-			library.addBook(book);
-			break;
-		} else {
-			System.out.println("Invalid book type. Please enter either 'fiction' or 'nonfiction'.");
+			if (bookType.equalsIgnoreCase("fiction")) {
+				System.out.print("Enter Fiction Type: ");
+				String fictionType = scanner.nextLine();
+				FictionBook book = new FictionBook(ISBN, title, author, genre, fictionType);
+				library.addBook(book);
+				break;
+			} else if (bookType.equalsIgnoreCase("nonfiction")) {
+				System.out.print("Enter Non-Fiction Type: ");
+				String nonFicType = scanner.nextLine();
+				NonFictionBook book = new NonFictionBook(ISBN, title, author, genre, nonFicType);
+				library.addBook(book);
+				break;
+			} else {
+				System.out.println("Invalid book type. Please enter either 'fiction' or 'nonfiction'.");
+			}
 		}
-	}
 	}
 
 	private void removeBook() {
 		System.out.print("Enter ISBN of the book to remove: ");
 		String ISBN = scanner.nextLine();
-		 
+
 		Book book = library.findBookByISBN(ISBN);
 		if (book != null) {
 			library.removeBook(book);
@@ -105,45 +123,44 @@ public class LibraryManagementSystemUI {
 		}
 	}
 
-	private void registerPatron() {	
+	private void registerPatron() {
 		System.out.print("Is Patron Student or Faculty: Enter S or F: ");
-			char type = scanner.next().charAt(0);
+		char type = scanner.next().charAt(0);
+		scanner.nextLine();
+
+		while (type != 'S' && type != 'F') {
+			System.out.println("Invalid input. Please enter either S or F.");
+			System.out.print("Is Patron Student or Faculty: Enter S or F: ");
+			type = scanner.next().charAt(0);
+			scanner.nextLine();
+		}
+
+		System.out.print("Enter name: ");
+		String name = scanner.nextLine();
+
+		System.out.print("Enter contact info: ");
+		String contactInfo = scanner.nextLine();
+
+		if (type == 'S') {
+			System.out.print("Enter year of graduation: ");
+			int yearOfGrad = scanner.nextInt();
 			scanner.nextLine();
 
-			 while (type != 'S' && type != 'F') {
-			        System.out.println("Invalid input. Please enter either S or F.");
-			        System.out.print("Is Patron Student or Faculty: Enter S or F: ");
-			        type = scanner.next().charAt(0);
-			        scanner.nextLine();
-			    }
-			
-			System.out.print("Enter name: ");
-			String name = scanner.nextLine();
+			Patron.Student student = new Patron.Student(UUID.randomUUID(), name, contactInfo, yearOfGrad);
+			library.registerPatron(student);
 
-			System.out.print("Enter contact info: ");
-			String contactInfo = scanner.nextLine();
+		} else if (type == 'F') {
+			Patron.Faculty faculty = new Patron.Faculty(UUID.randomUUID(), name, contactInfo);
+			library.registerPatron(faculty);
+		}
 
-
-			if (type == 'S') {
-				System.out.print("Enter year of graduation: ");
-				int yearOfGrad = scanner.nextInt();
-				scanner.nextLine();
-
-				Patron.Student student = new Patron.Student(UUID.randomUUID(), name, contactInfo, yearOfGrad);
-				library.registerPatron(student);
-				
-			} else if (type == 'F') {
-				Patron.Faculty faculty = new Patron.Faculty(UUID.randomUUID(), name, contactInfo);
-				library.registerPatron(faculty);
-			} 
-
-			System.out.println("Patron registered successfully.");
+		System.out.println("Patron registered successfully.");
 	}
 
 	private void removePatron() {
 		System.out.print("Enter Patron Name to remove: ");
 		String name = scanner.nextLine();
-		
+
 		Patron patron = library.findPatronByName(name);
 		if (patron != null) {
 			library.removePatron(patron);
@@ -188,13 +205,13 @@ public class LibraryManagementSystemUI {
 		}
 		System.out.print("Enter ISBN of the book to return: ");
 		String ISBN = scanner.nextLine();
-	    Transaction transaction = library.returnBook(patron, ISBN);
-			if (transaction != null) {
-		        System.out.println("Book returned successfully.");
-		    } else {
-		        System.out.println("Book is not available for checkout.");
-		    }
+		Transaction transaction = library.returnBook(patron, ISBN);
+		if (transaction != null) {
+			System.out.println("Book returned successfully.");
+		} else {
+			System.out.println("Book is not available for checkout.");
 		}
+	}
 
 	public static void main(String[] args) {
 		LibraryManagementSystemUI ui = new LibraryManagementSystemUI();
