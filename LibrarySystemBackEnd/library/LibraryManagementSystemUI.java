@@ -1,15 +1,14 @@
 package library;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Scanner;
 import java.util.UUID;
 
+import library_database.DataBaseManager;
+
 public class LibraryManagementSystemUI {
 	private final Library library;
 	private final Scanner scanner;
-	private static final String url = "/Library-System/LibrarySystemBackEnd/library/sqlite-jdbc-3.7.2.jar";
 
 	public LibraryManagementSystemUI() {
 		this.library = new Library();
@@ -56,7 +55,14 @@ public class LibraryManagementSystemUI {
 				returnBook();
 				break;
 			case 7:
-				connect();
+
+				try {
+					DataBaseManager.connect();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
 				break;
 			case 8:
 				System.out.println("Exiting...");
@@ -65,16 +71,6 @@ public class LibraryManagementSystemUI {
 				System.out.println("Invalid choice. Please try again.");
 			}
 		} while (choice != 8);
-	}
-
-	private Connection connect() {
-		Connection conn = null;
-		try {
-			conn = DriverManager.getConnection(url);
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-		}
-		return conn;
 	}
 
 	private void addBook() {

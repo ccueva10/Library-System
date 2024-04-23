@@ -1,7 +1,5 @@
 package library;
 
-import java.util.UUID;
-
 public class Book {
 	private String ISBN;
 	private String title;

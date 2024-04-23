@@ -6,23 +6,20 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DataBaseManager {
-	private static final String DATABASE_URL = "Library-System/LibrarySystemBackEnd/library/sqlite-jdbc-3.7.2.jar";
 
-	public Connection connect() {
-		Connection conn = null;
+	private static final String DATABASE_URL = "jdbc:sqlite:LibrarySystemBackEnd/library_database/library_database.db";
+
+	public static Connection connect() throws SQLException {
 		try {
-			conn = DriverManager.getConnection(DATABASE_URL);
-			if (conn != null) {
-				System.out.println("Connected to the database.");
-				createTables(conn); // Create tables if they don't exist
-			}
+			DriverManager.registerDriver(new org.sqlite.JDBC());
 		} catch (SQLException e) {
-			System.out.println("Error connecting to the database: " + e.getMessage());
+			e.printStackTrace();
+			throw new SQLException("Error registering SQLite JDBC driver", e);
 		}
-		return conn;
+		return DriverManager.getConnection(DATABASE_URL);
 	}
 
-	private void createTables(Connection conn) {
+	private static void createTables(Connection conn) {
 		String createUserProfilesTableSQL = "CREATE TABLE IF NOT EXISTS user_profiles ("
 				+ "id INTEGER PRIMARY KEY AUTOINCREMENT," + "username TEXT NOT NULL," + "password TEXT NOT NULL,"
 				+ "favorite_books TEXT," + "reading_habits TEXT," + "literary_preferences TEXT" + ");";

@@ -43,7 +43,7 @@ class Library {
 
 	public Transaction returnBook(Patron patron, String ISBN) {
         Book book = findBookByISBN(ISBN);
-        
+
 		if (!book.isAvailable() && patron.borrowHistory.contains(book)) {
 			book.setAvailable(true);
 			patron.removeBorrowHistory(book);
