@@ -209,9 +209,11 @@ public class LibraryManagementSystemUI {
 			System.out.println("Book is not available for checkout.");
 		}
 	}
-
+	
 	public static void main(String[] args) {
+		System.out.print("thibng");
 		LibraryManagementSystemUI ui = new LibraryManagementSystemUI();
 		ui.start();
 	}
 }
+

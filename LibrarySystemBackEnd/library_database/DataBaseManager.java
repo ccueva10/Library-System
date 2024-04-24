@@ -2,9 +2,17 @@ package library_database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+<<<<<<< HEAD
 import java.util.Scanner;
+=======
+import java.util.List;
+
+import library.Book;
+import library.User;
+>>>>>>> 1b5c23757a6b51489444a011931d8232ba8b7982
 
 public class DataBaseManager {
 
@@ -67,22 +75,40 @@ public class DataBaseManager {
 	}
 
 	private static void createTables(Connection conn) {
-		String createUserProfilesTableSQL = "CREATE TABLE IF NOT EXISTS user_profiles ("
-				+ "id INTEGER PRIMARY KEY AUTOINCREMENT," + "username TEXT NOT NULL," + "password TEXT NOT NULL,"
-				+ "favorite_books TEXT," + "reading_habits TEXT," + "literary_preferences TEXT" + ");";
-
-		String createPostsTableSQL = "CREATE TABLE IF NOT EXISTS posts (" + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-				+ "user_id INTEGER," + "content TEXT," + "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,"
-				+ "FOREIGN KEY(user_id) REFERENCES user_profiles(id)" + ");";
-
-		// Add other table creation SQL statements as needed
+		String createUserProfilesTableSQL = "CREATE TABLE IF NOT EXISTS user_profiles (" + "id TEXT PRIMARY KEY,"
+				+ "username TEXT NOT NULL," + "password TEXT NOT NULL," + "favorite_books TEXT,"
+				+ "reading_habits TEXT," + "literary_preferences TEXT" + ");";
 
 		try (Statement stmt = conn.createStatement()) {
 			stmt.execute(createUserProfilesTableSQL);
-			stmt.execute(createPostsTableSQL);
-			// Execute other table creation SQL statements
 		} catch (SQLException e) {
-			System.out.println("Error creating tables: " + e.getMessage());
+			System.out.println("Error creating user profiles table: " + e.getMessage());
 		}
 	}
+
+	public static void createUserProfile(User user) {
+		String insertSQL = "INSERT INTO user_profiles (id, username, password, favorite_books, reading_habits, literary_preferences) VALUES (?, ?, ?, ?, ?, ?)";
+
+		try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(insertSQL)) {
+			pstmt.setString(1, user.getId().toString());
+			pstmt.setString(2, user.getUsername());
+			pstmt.setString(3, user.getPassword());
+			pstmt.setString(4, booksToString(user.getFavoriteBooks()));
+			pstmt.setString(5, user.getReadingHabits());
+			pstmt.setString(6, user.getLiteraryPref());
+
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println("Error adding user profile: " + e.getMessage());
+		}
+	}
+
+	private static String booksToString(List<Book> books) {
+		StringBuilder sb = new StringBuilder();
+		for (Book book : books) {
+			sb.append(book.getISBN()).append(",");
+		}
+		return sb.toString();
+	}
+
 }
