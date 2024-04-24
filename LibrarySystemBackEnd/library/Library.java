@@ -3,7 +3,7 @@ package library;
 import java.util.ArrayList;
 import java.util.List;
 
-class Library {
+public class Library {
 	private List<Book> books;
 	private List<Patron> patrons;
 	private List<Transaction> transactions;
@@ -42,7 +42,7 @@ class Library {
 	}
 
 	public Transaction returnBook(Patron patron, String ISBN) {
-        Book book = findBookByISBN(ISBN);
+		Book book = findBookByISBN(ISBN);
 
 		if (!book.isAvailable() && patron.borrowHistory.contains(book)) {
 			book.setAvailable(true);
