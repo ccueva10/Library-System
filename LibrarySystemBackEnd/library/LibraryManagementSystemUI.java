@@ -60,8 +60,9 @@ public class LibraryManagementSystemUI {
 					DataBaseManager.connect();
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					// e.printStackTrace();
 				}
+				DataBaseManager.socialStart();
 
 				break;
 			case 8:
