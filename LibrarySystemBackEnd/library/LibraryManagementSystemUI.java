@@ -211,7 +211,6 @@ public class LibraryManagementSystemUI {
 	}
 	
 	public static void main(String[] args) {
-		System.out.print("thibng");
 		LibraryManagementSystemUI ui = new LibraryManagementSystemUI();
 		ui.start();
 	}
