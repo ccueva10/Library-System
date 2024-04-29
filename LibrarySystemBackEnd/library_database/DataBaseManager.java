@@ -57,6 +57,7 @@ public class DataBaseManager {
 			case 1:
 				break;
 			case 2:
+				postMessage();
 				break;
 			case 3:
 				break;
