@@ -74,6 +74,21 @@ public class DataBaseManager {
 		} while (choice != 6);
 	}
 
+	private static void postMessage() {
+        try {
+    		System.out.print("Enter your user ID: ");
+    		int userId = scanner.nextInt();
+           	scanner.nextLine(); // Consume newline
+          	System.out.print("Enter your message: ");
+           	String message = scanner.nextLine();
+
+           	SocialInteractionManager.postMessage(userId, message);
+           	System.out.println("Message posted successfully!");
+    	} catch (SQLException e) {
+            System.err.println("Error posting message: " + e.getMessage());
+        }
+    }
+
 	private static void createTables(Connection conn) {
 		String createUserProfilesTableSQL = "CREATE TABLE IF NOT EXISTS user_profiles (" + "id TEXT PRIMARY KEY,"
 				+ "username TEXT NOT NULL," + "password TEXT NOT NULL," + "favorite_books TEXT,"
