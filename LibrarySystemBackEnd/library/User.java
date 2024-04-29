@@ -115,4 +115,63 @@ public class User {
 		}
 		return books;
 	}
+
+	public boolean registerUser() {
+		// Check if username already exists
+		if (checkUsernameExists(this.username)) {
+			System.out.println("Username already exists. Please choose another username.");
+			return false;
+		}
+
+		// Insert new user into database
+		String sql = "INSERT INTO user_profiles (id, username, password) VALUES (?, ?, ?)";
+
+		try (Connection conn = DataBaseManager.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			this.id = UUID.randomUUID();
+			pstmt.setString(1, this.id.toString());
+			pstmt.setString(2, this.username);
+			pstmt.setString(3, this.password);
+			pstmt.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			System.out.println("Error registering user: " + e.getMessage());
+			return false;
+		}
+	}
+
+	public boolean loginUser() {
+		// Fetch user from database based on username and password
+		String sql = "SELECT * FROM user_profiles WHERE username = ? AND password = ?";
+		try (Connection conn = DataBaseManager.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, this.username);
+			pstmt.setString(2, this.password);
+			ResultSet rs = pstmt.executeQuery();
+
+			if (rs.next()) {
+				this.id = UUID.fromString(rs.getString("id"));
+				// Set other user properties here if needed
+				return true;
+			} else {
+				System.out.println("Invalid username or password.");
+				return false;
+			}
+		} catch (SQLException e) {
+			System.out.println("Error logging in: " + e.getMessage());
+			return false;
+		}
+	}
+
+	private boolean checkUsernameExists(String username) {
+		// Check if username already exists in the database
+		String sql = "SELECT * FROM user_profiles WHERE username = ?";
+		try (Connection conn = DataBaseManager.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, username);
+			ResultSet rs = pstmt.executeQuery();
+			return rs.next(); // Returns true if username exists, false otherwise
+		} catch (SQLException e) {
+			System.out.println("Error checking username: " + e.getMessage());
+			return false;
+		}
+	}
+
 }

@@ -1,9 +1,11 @@
+
 package library;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,4 +101,27 @@ public class SocialInteractionManager {
 
 		return shares;
 	}
+
+	public static void createTables() {
+		try (Connection conn = DataBaseManager.connect(); Statement stmt = conn.createStatement()) {
+			// Create posts table
+			stmt.execute("CREATE TABLE IF NOT EXISTS posts (" + "id INT AUTO_INCREMENT PRIMARY KEY,"
+					+ "user_id INT NOT NULL," + "message VARCHAR(255) NOT NULL)");
+
+			// Create comments table
+			stmt.execute("CREATE TABLE IF NOT EXISTS comments (" + "id INT AUTO_INCREMENT PRIMARY KEY,"
+					+ "user_id INT NOT NULL," + "post_id INT NOT NULL," + "comment VARCHAR(255) NOT NULL)");
+
+			// Create likes table
+			stmt.execute("CREATE TABLE IF NOT EXISTS likes (" + "id INT AUTO_INCREMENT PRIMARY KEY,"
+					+ "user_id INT NOT NULL," + "post_id INT NOT NULL)");
+
+			// Create shares table
+			stmt.execute("CREATE TABLE IF NOT EXISTS shares (" + "id INT AUTO_INCREMENT PRIMARY KEY,"
+					+ "user_id INT NOT NULL," + "post_id INT NOT NULL)");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

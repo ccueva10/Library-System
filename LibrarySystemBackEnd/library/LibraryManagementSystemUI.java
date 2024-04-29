@@ -56,13 +56,56 @@ public class LibraryManagementSystemUI {
 				break;
 			case 7:
 
-				try {
-					DataBaseManager.connect();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					// e.printStackTrace();
+				System.out.println("Enter 1: to Login or Enter 2: to Register to enter the social network ");
+				choice = scanner.nextInt();
+				switch (choice) {
+				case 1:
+					// Login
+					System.out.println("Enter username:");
+					String username = scanner.next();
+					System.out.println("Enter password:");
+					String password = scanner.next();
+					User loginUser = new User(username, password);
+					if (loginUser.loginUser()) {
+						System.out.println("Login successful!");
+						// Proceed with socialStart
+						try {
+							DataBaseManager.connect();
+						} catch (SQLException e) {
+							// TODO Auto-generated catch block
+							// e.printStackTrace();
+						}
+						DataBaseManager.socialStart(username, password);
+					} else {
+						System.out.println("Login failed. Please try again.");
+					}
+					break;
+				case 2:
+					// Register
+					System.out.println("Enter username:");
+					String regUsername = scanner.next();
+					System.out.println("Enter password:");
+					String regPassword = scanner.next();
+					User registerUser = new User(regUsername, regPassword);
+					if (registerUser.registerUser()) {
+						System.out.println("Registration successful!");
+						// Proceed with socialStart
+						try {
+							DataBaseManager.connect();
+						} catch (SQLException e) {
+							// TODO Auto-generated catch block
+							// e.printStackTrace();
+						}
+						DataBaseManager.socialStart(regUsername, regPassword);
+					} else {
+						System.out.println("Registration failed. Please try again.");
+					}
+					break;
+
+				default:
+					System.out.println("Invalid choice.");
+
 				}
-				DataBaseManager.socialStart();
 
 				break;
 			case 8:
@@ -209,10 +252,9 @@ public class LibraryManagementSystemUI {
 			System.out.println("Book is not available for checkout.");
 		}
 	}
-	
+
 	public static void main(String[] args) {
 		LibraryManagementSystemUI ui = new LibraryManagementSystemUI();
 		ui.start();
 	}
 }
-
