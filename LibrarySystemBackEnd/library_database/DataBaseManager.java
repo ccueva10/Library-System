@@ -5,14 +5,14 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-<<<<<<< HEAD
-import java.util.Scanner;
-=======
+//=======
 import java.util.List;
+//<<<<<<< HEAD
+import java.util.Scanner;
 
 import library.Book;
 import library.User;
->>>>>>> 1b5c23757a6b51489444a011931d8232ba8b7982
+//>>>>>>> 1b5c23757a6b51489444a011931d8232ba8b7982
 
 public class DataBaseManager {
 
