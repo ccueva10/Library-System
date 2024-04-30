@@ -5,10 +5,12 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 import library.Book;
+import library.SocialInteractionManager;
 import library.User;
 
 public class DataBaseManager {
@@ -27,7 +29,7 @@ public class DataBaseManager {
 			e.printStackTrace();
 			throw new SQLException("Error registering SQLite JDBC driver", e);
 		}
-		System.out.println("Successfully logged in to BiblioConnect");
+		System.out.println("...");
 		Connection conn = DriverManager.getConnection(DATABASE_URL);
 
 		// Call createTables method to create the necessary tables
@@ -37,7 +39,7 @@ public class DataBaseManager {
 	}
 
 	public static void displaySocialMenu() {
-		System.out.println("Welcome to the Library Management System!");
+		System.out.println("Welcome to the BiblioConnect Social Network!");
 		System.out.println("1. Update User Profile");
 		System.out.println("2. Social Interactions");
 		System.out.println("3. Groups and Discussions");
@@ -59,28 +61,30 @@ public class DataBaseManager {
 			case 1:
 
 				// edit profile habits literary preferences
+				updateUserProfile(username);
 				break;
 			case 2:
-				// social interactions
-				// patrons can interact posting messages, commenting, and liking or sharing
-				// content
+				SocialInteractionManager.startInteractionOptions(username);
 				break;
 			case 3:
 				// groups and discussions
 				// join or create interest based groups
 				// discussions
+
+				GroupsManager.groupsStart();
 				break;
 			case 4:
 				// following
 				// follow eachother to stay updated on their activies, book recommendations and
 				// discussions
-
+				FollowManager.startFollowOptions(username, password);
 				break;
 			case 5:
 				// events & meet up s
 				// the platform hosts literary events, book clubs, author signings and other
 				// literary gatherings
 				// this should be managed by librarian and read by users
+				EventManager.startEventOptions(username, password);
 
 				break;
 			case 6:
@@ -99,7 +103,7 @@ public class DataBaseManager {
 				+ "reading_habits TEXT," + "literary_preferences TEXT" + ");";
 
 		String createPostsTableSQL = "CREATE TABLE IF NOT EXISTS posts (" + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-				+ "user_id TEXT," + "content TEXT," + "timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+				+ "user_id TEXT," + "message TEXT," + "timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
 				+ "FOREIGN KEY (user_id) REFERENCES user_profiles(id)" + ");";
 
 		String createCommentsTableSQL = "CREATE TABLE IF NOT EXISTS comments ("
@@ -113,11 +117,6 @@ public class DataBaseManager {
 
 		String createGroupsTableSQL = "CREATE TABLE IF NOT EXISTS groups (" + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
 				+ "name TEXT," + "description TEXT" + ");";
-
-		String createUserGroupsTableSQL = "CREATE TABLE IF NOT EXISTS user_groups (" + "user_id TEXT,"
-				+ "group_id INTEGER," + "PRIMARY KEY (user_id, group_id),"
-				+ "FOREIGN KEY (user_id) REFERENCES user_profiles(id)," + "FOREIGN KEY (group_id) REFERENCES groups(id)"
-				+ ");";
 
 		String createGroupDiscussionsTableSQL = "CREATE TABLE IF NOT EXISTS group_discussions ("
 				+ "id INTEGER PRIMARY KEY AUTOINCREMENT," + "group_id INTEGER," + "user_id TEXT," + "content TEXT,"
@@ -142,7 +141,6 @@ public class DataBaseManager {
 			stmt.execute(createCommentsTableSQL);
 			stmt.execute(createLikesTableSQL);
 			stmt.execute(createGroupsTableSQL);
-			stmt.execute(createUserGroupsTableSQL);
 			stmt.execute(createGroupDiscussionsTableSQL);
 			stmt.execute(createFollowersTableSQL);
 			stmt.execute(createEventsTableSQL);
@@ -175,6 +173,66 @@ public class DataBaseManager {
 			sb.append(book.getISBN()).append(",");
 		}
 		return sb.toString();
+	}
+
+	private static void updateUserProfile(String username) {
+		System.out.println("Adding favorite books, reading habits, and literary preferences to your profile:");
+
+		// Get user input for favorite books, reading habits, and literary preferences
+		System.out.print("Enter your favorite books (comma-separated list): ");
+		String favoriteBooksInput = scanner.nextLine();
+		List<Book> favoriteBooks = parseFavoriteBooksInput(favoriteBooksInput);
+
+		System.out.print("Enter your reading habits: ");
+		String readingHabits = scanner.nextLine();
+
+		System.out.print("Enter your literary preferences: ");
+		String literaryPreferences = scanner.nextLine();
+
+		// Create a User object with the updated profile information
+		User user = new User(username, "");
+		user.setFavoriteBooks(favoriteBooks);
+		user.setReadingHabits(readingHabits);
+		user.setLiteraryPref(literaryPreferences);
+
+		// Update the user profile in the database
+		updateUserProfileInDatabase(user);
+	}
+
+	private static List<Book> parseFavoriteBooksInput(String input) {
+		List<Book> favoriteBooks = new ArrayList<>();
+		String[] bookISBNs = input.split(",");
+
+		// Directly add the user's input to the favorite books list without checking
+		// against the library
+		for (String ISBN : bookISBNs) {
+			Book book = new Book(ISBN.trim(), "", "", ""); // Create a new Book object with the ISBN provided by the
+															// user
+			favoriteBooks.add(book);
+		}
+
+		return favoriteBooks;
+	}
+
+	private static void updateUserProfileInDatabase(User user) {
+		// Update user profile in the database with the new information
+		String updateSQL = "UPDATE user_profiles SET favorite_books = ?, reading_habits = ?, literary_preferences = ? WHERE username = ?";
+
+		try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(updateSQL)) {
+			pstmt.setString(1, booksToString(user.getFavoriteBooks()));
+			pstmt.setString(2, user.getReadingHabits());
+			pstmt.setString(3, user.getLiteraryPref());
+			pstmt.setString(4, user.getUsername());
+
+			int rowsAffected = pstmt.executeUpdate();
+			if (rowsAffected > 0) {
+				System.out.println("User profile updated successfully.");
+			} else {
+				System.out.println("Failed to update user profile.");
+			}
+		} catch (SQLException e) {
+			System.out.println("Error updating user profile: " + e.getMessage());
+		}
 	}
 
 }

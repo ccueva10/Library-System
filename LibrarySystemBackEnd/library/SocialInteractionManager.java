@@ -1,17 +1,80 @@
-
 package library;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Scanner;
 
 import library_database.DataBaseManager;
 
 public class SocialInteractionManager {
+
+	private static Scanner scanner;
+
+	static {
+		scanner = new Scanner(System.in);
+	}
+
+	public static void interactionMenu() {
+		System.out.println("Welcome to the Social Interaction Menu");
+		System.out.println("1. Post a message");
+		System.out.println("2. Comment on a post");
+		System.out.println("3. Like a post");
+		System.out.println("4. Share a post");
+		System.out.println("5. Exit");
+	}
+
+	public static void startInteractionOptions(String username) {
+		int choice;
+		try {
+			int userId = getUserIdByUsername(username);
+			do {
+				interactionMenu();
+				System.out.print("Enter your choice:");
+				choice = scanner.nextInt();
+				scanner.nextLine();
+
+				switch (choice) {
+				case 1:
+					System.out.print("Enter your message: ");
+					String message = scanner.nextLine();
+					postMessage(userId, message);
+					System.out.println("Message posted successfully.");
+					break;
+				case 2:
+					System.out.print("Enter the post ID: ");
+					int postId = scanner.nextInt();
+					scanner.nextLine(); // Consume newline
+					System.out.print("Enter your comment: ");
+					String comment = scanner.nextLine();
+					commentOnPost(userId, postId, comment);
+					System.out.println("Comment added successfully.");
+					break;
+				case 3:
+					System.out.print("Enter the post ID: ");
+					postId = scanner.nextInt();
+					likePost(userId, postId);
+					System.out.println("Post liked successfully.");
+					break;
+				case 4:
+					System.out.print("Enter the post ID: ");
+					postId = scanner.nextInt();
+					sharePost(userId, postId);
+					System.out.println("Post shared successfully.");
+					break;
+				case 5:
+					System.out.println("Exiting...");
+					break;
+				default:
+					System.out.println("Invalid choice. Please try again.");
+				}
+
+			} while (choice != 5);
+		} catch (SQLException e) {
+			System.out.println("Error starting interaction options: " + e.getMessage());
+		}
+	}
 
 	public static void postMessage(int userId, String message) throws SQLException {
 		String sql = "INSERT INTO posts (user_id, message) VALUES (?, ?)";
@@ -54,74 +117,17 @@ public class SocialInteractionManager {
 		}
 	}
 
-	public static List<String> getPostComments(int postId) throws SQLException {
-		List<String> comments = new ArrayList<>();
-		String sql = "SELECT comment FROM comments WHERE post_id = ?";
-
+	public static int getUserIdByUsername(String username) throws SQLException {
+		String sql = "SELECT id FROM user_profiles WHERE username = ?";
 		try (Connection conn = DataBaseManager.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setInt(1, postId);
+			pstmt.setString(1, username);
 			try (ResultSet rs = pstmt.executeQuery()) {
-				while (rs.next()) {
-					comments.add(rs.getString("comment"));
+				if (rs.next()) {
+					return rs.getInt("id");
+				} else {
+					throw new SQLException("User not found");
 				}
 			}
 		}
-
-		return comments;
 	}
-
-	public static List<Integer> getPostLikes(int postId) throws SQLException {
-		List<Integer> likes = new ArrayList<>();
-		String sql = "SELECT user_id FROM likes WHERE post_id = ?";
-
-		try (Connection conn = DataBaseManager.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setInt(1, postId);
-			try (ResultSet rs = pstmt.executeQuery()) {
-				while (rs.next()) {
-					likes.add(rs.getInt("user_id"));
-				}
-			}
-		}
-
-		return likes;
-	}
-
-	public static List<Integer> getPostShares(int postId) throws SQLException {
-		List<Integer> shares = new ArrayList<>();
-		String sql = "SELECT user_id FROM shares WHERE post_id = ?";
-
-		try (Connection conn = DataBaseManager.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setInt(1, postId);
-			try (ResultSet rs = pstmt.executeQuery()) {
-				while (rs.next()) {
-					shares.add(rs.getInt("user_id"));
-				}
-			}
-		}
-
-		return shares;
-	}
-
-	public static void createTables() {
-		try (Connection conn = DataBaseManager.connect(); Statement stmt = conn.createStatement()) {
-			// Create posts table
-			stmt.execute("CREATE TABLE IF NOT EXISTS posts (" + "id INT AUTO_INCREMENT PRIMARY KEY,"
-					+ "user_id INT NOT NULL," + "message VARCHAR(255) NOT NULL)");
-
-			// Create comments table
-			stmt.execute("CREATE TABLE IF NOT EXISTS comments (" + "id INT AUTO_INCREMENT PRIMARY KEY,"
-					+ "user_id INT NOT NULL," + "post_id INT NOT NULL," + "comment VARCHAR(255) NOT NULL)");
-
-			// Create likes table
-			stmt.execute("CREATE TABLE IF NOT EXISTS likes (" + "id INT AUTO_INCREMENT PRIMARY KEY,"
-					+ "user_id INT NOT NULL," + "post_id INT NOT NULL)");
-
-			// Create shares table
-			stmt.execute("CREATE TABLE IF NOT EXISTS shares (" + "id INT AUTO_INCREMENT PRIMARY KEY,"
-					+ "user_id INT NOT NULL," + "post_id INT NOT NULL)");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-
 }

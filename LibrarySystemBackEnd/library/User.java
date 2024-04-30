@@ -54,8 +54,8 @@ public class User {
 		return favoriteBooks;
 	}
 
-	public void addFavoriteBook(Book book) {
-		favoriteBooks.add(book);
+	public void setFavoriteBooks(List<Book> favoriteBooks) {
+		this.favoriteBooks = favoriteBooks;
 	}
 
 	public String getReadingHabits() {
