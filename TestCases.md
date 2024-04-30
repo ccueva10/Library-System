@@ -102,7 +102,7 @@
 3. Perform the selected action related to following and followers.
 4. Verify if the action is executed successfully.  
 **Expected Result:** The chosen action related to following and followers is executed successfully with appropriate feedback displayed.  
-**Result:** failed
+**Result:** Failed: There are issues
 
 ### Test Case 5: Events and Meetups
 **Description:** Verifies the functionality related to events and meetups, including viewing/updating events, registering/unregistering for events, and managing event attendees.  
