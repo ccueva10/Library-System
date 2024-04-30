@@ -46,6 +46,7 @@ public class DataBaseManager {
 		System.out.println("4. Following and Followers");
 		System.out.println("5. Events and Meetups");
 		System.out.println("6. Exit");
+		System.out.println("");
 	}
 
 	public static void socialStart(String username, String password) {
@@ -176,10 +177,9 @@ public class DataBaseManager {
 	}
 
 	private static void updateUserProfile(String username) {
-		System.out.println("Adding favorite books, reading habits, and literary preferences to your profile:");
 
 		// Get user input for favorite books, reading habits, and literary preferences
-		System.out.print("Enter your favorite books (comma-separated list): ");
+		System.out.println("Enter your favorite books (comma-separated list): ");
 		String favoriteBooksInput = scanner.nextLine();
 		List<Book> favoriteBooks = parseFavoriteBooksInput(favoriteBooksInput);
 

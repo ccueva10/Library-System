@@ -18,7 +18,8 @@ public class EventManager {
 		System.out.println("1. Host Literary Event");
 		System.out.println("2. Register for Event");
 		System.out.println("3. View Events");
-		System.out.println("4. Exit");
+		System.out.println("4. Back to Social Menu");
+		System.out.println("");
 	}
 
 	public static void startEventOptions(String username, String password) {

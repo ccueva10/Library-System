@@ -16,15 +16,14 @@ public class FollowManager {
 	}
 
 	public static void followMenu() {
-
 		System.out.println("Welcome to the Follow Menu ");
 		System.out.println("1. Follow user");
 		System.out.println("2. Unfollow user ");
 		System.out.println("3. See Following");
 		System.out.println("4. See Followers");
 		System.out.println("5. See user activity");
-		System.out.println("6. Exit");
-
+		System.out.println("6. Back to Social Menu");
+		System.out.println("");
 	}
 
 	public static void startFollowOptions(String username, String password) {
@@ -37,88 +36,21 @@ public class FollowManager {
 
 			switch (choice) {
 			case 1:
-				System.out.print("Enter the username of the user you want to follow: ");
-				String followUsername = scanner.nextLine();
-				try {
-					int followerId = getUserIdByUsername(username); // Get the ID of the current user
-					int followeeId = getUserIdByUsername(followUsername); // Get the ID of the user to follow
-					if (followeeId != -1) { // If the user to follow exists
-						followUser(followerId, followeeId); // Follow the user
-						System.out.println("You are now following " + followUsername);
-					} else {
-						System.out.println("User " + followUsername + " does not exist.");
-					}
-				} catch (SQLException e) {
-					System.out.println("Error following user: " + e.getMessage());
-				}
+				followUser(username);
 				break;
 			case 2:
-				System.out.print("Enter the username of the user you want to follow: ");
-				String unfollowUserName = scanner.nextLine();
-				try {
-					int followerId = getUserIdByUsername(username); // Get the ID of the current user
-					int followeeId = getUserIdByUsername(unfollowUserName); // Get the ID of the user to follow
-					if (followeeId != -1) { // If the user to follow exists
-						unfollowUser(followerId, followeeId); // unfollow the user
-						System.out.println("You are now following " + unfollowUserName);
-					} else {
-						System.out.println("User " + unfollowUserName + " does not exist.");
-					}
-				} catch (SQLException e) {
-					System.out.println("Error following user: " + e.getMessage());
-				}
-
+				unfollowUser(username);
 				break;
 			case 3:
-				try {
-					int userId = getUserIdByUsername(username); // Get the ID of the current user
-					List<Integer> followingIds = getFollowing(userId); // Get the list of users the current user is
-																		// following
-					if (!followingIds.isEmpty()) {
-						System.out.println("Users you are following:");
-						for (int followeeId : followingIds) {
-							String followeeUsername = getUsernameById(followeeId); // Get the username of the followee
-							System.out.println("- " + followeeUsername);
-						}
-					} else {
-						System.out.println("You are not following anyone.");
-					}
-				} catch (SQLException e) {
-					System.out.println("Error retrieving following list: " + e.getMessage());
-				}
-
+				viewFollowing(username);
 				break;
 			case 4:
-				try {
-					int userId = getUserIdByUsername(username); // Get the ID of the current user
-					List<Integer> followerIds = getFollowers(userId); // Get the list of users following the current
-																		// user
-					if (!followerIds.isEmpty()) {
-						System.out.println("Users following you:");
-						for (int followerId : followerIds) {
-							String followerUsername = getUsernameById(followerId); // Get the username of the follower
-							System.out.println("- " + followerUsername);
-						}
-					} else {
-						System.out.println("You have no followers.");
-					}
-				} catch (SQLException e) {
-					System.out.println("Error retrieving followers list: " + e.getMessage());
-				}
-
+				viewFollowers(username);
 				break;
 			case 5:
-				System.out.print("Enter their username to see activity");
-				String followUserName = scanner.next();
-				try {
-					FollowManager.printUserActivity(followUserName);
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+				viewUserActivity();
 				break;
-
 			case 6:
-
 				System.out.println("Exiting...");
 				break;
 			default:
@@ -126,120 +58,182 @@ public class FollowManager {
 			}
 
 		} while (choice != 6);
-
 	}
 
-	public static void followUser(int followerId, int followeeId) throws SQLException {
-		String sql = "INSERT INTO followers (follower_id, followee_id) VALUES (?, ?)";
+	public static void followUser(String followerUsername) {
+		try {
+			Connection conn = DataBaseManager.connect();
 
-		try (Connection conn = DataBaseManager.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			System.out.print("Enter the username of the user you want to follow: ");
+			String followUsername = scanner.nextLine();
 
-			pstmt.setInt(1, followerId);
-			pstmt.setInt(2, followeeId);
-
-			pstmt.executeUpdate();
-		}
-	}
-
-	public static void unfollowUser(int followerId, int followeeId) throws SQLException {
-		String sql = "DELETE FROM followers WHERE follower_id = ? AND followee_id = ?";
-
-		try (Connection conn = DataBaseManager.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-			pstmt.setInt(1, followerId);
-			pstmt.setInt(2, followeeId);
-
-			pstmt.executeUpdate();
-		}
-	}
-
-	public static List<Integer> getFollowers(int userId) throws SQLException {
-		List<Integer> followers = new ArrayList<>();
-		String sql = "SELECT follower_id FROM followers WHERE followee_id = ?";
-
-		try (Connection conn = DataBaseManager.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-			pstmt.setInt(1, userId);
-
-			try (ResultSet rs = pstmt.executeQuery()) {
-				while (rs.next()) {
-					followers.add(rs.getInt("follower_id"));
-				}
+			int followerId = getUserIdByUsername(followerUsername, conn);
+			int followeeId = getUserIdByUsername(followUsername, conn);
+			if (followeeId != -1) {
+				followUserInDatabase(followerId, followeeId, conn);
+				System.out.println("You are now following " + followUsername);
+			} else {
+				System.out.println("User " + followUsername + " does not exist.");
 			}
+		} catch (SQLException e) {
+			System.out.println("Error following user: " + e.getMessage());
 		}
-
-		return followers;
 	}
 
-	public static List<Integer> getFollowing(int userId) throws SQLException {
-		List<Integer> following = new ArrayList<>();
-		String sql = "SELECT followee_id FROM followers WHERE follower_id = ?";
+	public static void unfollowUser(String followerUsername) {
+		try {
+			Connection conn = DataBaseManager.connect();
 
-		try (Connection conn = DataBaseManager.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			System.out.print("Enter the username of the user you want to unfollow: ");
+			String unfollowUsername = scanner.nextLine();
 
-			pstmt.setInt(1, userId);
-
-			try (ResultSet rs = pstmt.executeQuery()) {
-				while (rs.next()) {
-					following.add(rs.getInt("followee_id"));
-				}
+			int followerId = getUserIdByUsername(followerUsername, conn);
+			int followeeId = getUserIdByUsername(unfollowUsername, conn);
+			if (followeeId != -1) {
+				unfollowUserInDatabase(followerId, followeeId, conn);
+				System.out.println("You are no longer following " + unfollowUsername);
+			} else {
+				System.out.println("User " + unfollowUsername + " does not exist.");
 			}
+		} catch (SQLException e) {
+			System.out.println("Error unfollowing user: " + e.getMessage());
 		}
-
-		return following;
 	}
 
-	public static void printUserActivity(String username) throws SQLException {
-		// Query to retrieve the user's posts
-		String sql = "SELECT * FROM posts WHERE user_id = (SELECT id FROM user_profiles WHERE username = ?)";
+	public static void viewFollowing(String username) {
+		try {
+			Connection conn = DataBaseManager.connect();
 
-		try (Connection conn = DataBaseManager.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			int userId = getUserIdByUsername(username, conn);
+			List<String> followingUsernames = getFollowingUsernames(userId, conn);
 
-			pstmt.setString(1, username);
+			if (!followingUsernames.isEmpty()) {
+				System.out.println("Users you are following:");
+				for (String followeeUsername : followingUsernames) {
+					System.out.println("- " + followeeUsername);
+				}
+			} else {
+				System.out.println("You are not following anyone.");
+			}
+		} catch (SQLException e) {
+			System.out.println("Error retrieving following list: " + e.getMessage());
+		}
+	}
 
-			try (ResultSet rs = pstmt.executeQuery()) {
-				System.out.println("User Activity for " + username);
-				System.out.println("Posts:");
-				while (rs.next()) {
-					int postId = rs.getInt("id");
-					String content = rs.getString("content");
-					String timestamp = rs.getString("timestamp");
+	public static void viewFollowers(String username) {
+		try {
+			Connection conn = DataBaseManager.connect();
 
-					System.out.println("Post ID: " + postId);
-					System.out.println("Content: " + content);
-					System.out.println("Timestamp: " + timestamp);
+			int userId = getUserIdByUsername(username, conn);
+			List<String> followerUsernames = getFollowerUsernames(userId, conn);
+
+			if (!followerUsernames.isEmpty()) {
+				System.out.println("Users following you:");
+				for (String followerUsername : followerUsernames) {
+					System.out.println("- " + followerUsername);
+				}
+			} else {
+				System.out.println("You have no followers.");
+			}
+		} catch (SQLException e) {
+			System.out.println("Error retrieving followers list: " + e.getMessage());
+		}
+	}
+
+	public static void viewUserActivity() {
+		try {
+			Connection conn = DataBaseManager.connect();
+
+			System.out.print("Enter the username to see activity: ");
+			String username = scanner.nextLine();
+
+			String sql = "SELECT u.*, p.* FROM posts p " + "INNER JOIN user_profiles u ON p.user_id = u.id "
+					+ "WHERE u.username = ?";
+			try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+				pstmt.setString(1, username);
+				try (ResultSet rs = pstmt.executeQuery()) {
+					System.out.println("User Profile:");
+					while (rs.next()) {
+						System.out.println("Username: " + rs.getString("username"));
+						System.out.println("Favorite Books: " + rs.getString("favorite_books"));
+						System.out.println("Reading Habits: " + rs.getString("reading_habits"));
+						System.out.println("Literary Preferences: " + rs.getString("literary_preferences"));
+					}
 					System.out.println();
+
+					rs.beforeFirst(); // Move cursor back to the beginning to iterate over posts
+					System.out.println("User Activity for " + username);
+					System.out.println("Posts:");
+					while (rs.next()) {
+						int postId = rs.getInt("id");
+						String content = rs.getString("content");
+						String timestamp = rs.getString("timestamp");
+
+						System.out.println("Post ID: " + postId);
+						System.out.println("Content: " + content);
+						System.out.println("Timestamp: " + timestamp);
+						System.out.println();
+					}
 				}
 			}
+		} catch (SQLException e) {
+			System.out.println("Error retrieving user activity: " + e.getMessage());
 		}
 	}
 
-	public static int getUserIdByUsername(String username) throws SQLException {
+	public static int getUserIdByUsername(String username, Connection conn) throws SQLException {
 		String sql = "SELECT id FROM user_profiles WHERE username = ?";
-		try (Connection conn = DataBaseManager.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setString(1, username);
 			try (ResultSet rs = pstmt.executeQuery()) {
-				if (rs.next()) {
-					return rs.getInt("id");
-				} else {
-					return -1; // User not found
-				}
+				return rs.next() ? rs.getInt("id") : -1; // If user not found, return -1
 			}
 		}
 	}
 
-	public static String getUsernameById(int userId) throws SQLException {
-		String sql = "SELECT username FROM user_profiles WHERE id = ?";
-		try (Connection conn = DataBaseManager.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+	public static void followUserInDatabase(int followerId, int followeeId, Connection conn) throws SQLException {
+		String sql = "INSERT INTO followers (follower_id, followee_id) VALUES (?, ?)";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, followerId);
+			pstmt.setInt(2, followeeId);
+			pstmt.executeUpdate();
+		}
+	}
+
+	public static void unfollowUserInDatabase(int followerId, int followeeId, Connection conn) throws SQLException {
+		String sql = "DELETE FROM followers WHERE follower_id = ? AND followee_id = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, followerId);
+			pstmt.setInt(2, followeeId);
+			pstmt.executeUpdate();
+		}
+	}
+
+	public static List<String> getFollowingUsernames(int userId, Connection conn) throws SQLException {
+		List<String> followingUsernames = new ArrayList<>();
+		String sql = "SELECT u.username FROM followers f JOIN user_profiles u ON f.followee_id = u.id WHERE f.follower_id = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setInt(1, userId);
 			try (ResultSet rs = pstmt.executeQuery()) {
-				if (rs.next()) {
-					return rs.getString("username");
-				} else {
-					return null; // User not found
+				while (rs.next()) {
+					followingUsernames.add(rs.getString("username"));
 				}
 			}
 		}
+		return followingUsernames;
 	}
 
+	public static List<String> getFollowerUsernames(int userId, Connection conn) throws SQLException {
+		List<String> followerUsernames = new ArrayList<>();
+		String sql = "SELECT u.username FROM followers f JOIN user_profiles u ON f.follower_id = u.id WHERE f.followee_id = ?";
+		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setInt(1, userId);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				while (rs.next()) {
+					followerUsernames.add(rs.getString("username"));
+				}
+			}
+		}
+		return followerUsernames;
+	}
 }

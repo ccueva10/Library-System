@@ -22,7 +22,8 @@ public class SocialInteractionManager {
 		System.out.println("2. Comment on a post");
 		System.out.println("3. Like a post");
 		System.out.println("4. Share a post");
-		System.out.println("5. Exit");
+		System.out.println("5. Back to Social Menu");
+		System.out.println("");
 	}
 
 	public static void startInteractionOptions(String username) {
@@ -33,7 +34,7 @@ public class SocialInteractionManager {
 				interactionMenu();
 				System.out.print("Enter your choice:");
 				choice = scanner.nextInt();
-				scanner.nextLine();
+				scanner.nextLine(); // Consume newline
 
 				switch (choice) {
 				case 1:
@@ -87,7 +88,7 @@ public class SocialInteractionManager {
 	}
 
 	public static void commentOnPost(int userId, int postId, String comment) throws SQLException {
-		String sql = "INSERT INTO comments (user_id, post_id, comment) VALUES (?, ?, ?)";
+		String sql = "INSERT INTO comments (user_id, post_id, content) VALUES (?, ?, ?)";
 
 		try (Connection conn = DataBaseManager.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setInt(1, userId);

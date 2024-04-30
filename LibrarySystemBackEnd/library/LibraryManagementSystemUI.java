@@ -25,6 +25,7 @@ public class LibraryManagementSystemUI {
 		System.out.println("6. Return Book");
 		System.out.println("7. Enter BiblioConnect");
 		System.out.println("8. Exit");
+		System.out.println("");
 	}
 
 	public void start() {

@@ -11,6 +11,7 @@ import java.util.Scanner;
 public class GroupsManager {
 
 	private static Scanner scanner;
+
 	static {
 		scanner = new Scanner(System.in);
 	}
@@ -20,8 +21,10 @@ public class GroupsManager {
 		System.out.println("1. Join a Group");
 		System.out.println("2. Create a Group");
 		System.out.println("3. View Group Discussions");
-		System.out.println("4. View All Groups and Discussions");
-		System.out.println("5. Back to Social Menu");
+		System.out.println("4. Post Discussion");
+		System.out.println("5. View All Groups and Discussions");
+		System.out.println("6. Back to Social Menu");
+		System.out.println("");
 	}
 
 	public static void groupsStart() {
@@ -43,16 +46,19 @@ public class GroupsManager {
 				viewGroupDiscussions();
 				break;
 			case 4:
-				displayAllGroupsAndDiscussions();
+				postDiscussion();
 				break;
 			case 5:
+				displayAllGroupsAndDiscussions();
+				break;
+			case 6:
 				System.out.println("Returning to Social Menu...");
 				break;
 			default:
 				System.out.println("Invalid choice. Please try again.");
 			}
 
-		} while (choice != 5);
+		} while (choice != 6);
 	}
 
 	private static void joinGroup() {
@@ -93,6 +99,21 @@ public class GroupsManager {
 			}
 		} catch (SQLException e) {
 			System.out.println("Error viewing group discussions: " + e.getMessage());
+		}
+	}
+
+	private static void postDiscussion() {
+		System.out.println("Enter the name of the group to post discussion:");
+		String groupName = scanner.nextLine();
+		System.out.println("Enter your username:");
+		String username = scanner.nextLine();
+		System.out.println("Enter the content of the discussion:");
+		String content = scanner.nextLine();
+		try {
+			postDiscussion(groupName, username, content);
+			System.out.println("Discussion posted successfully!");
+		} catch (SQLException e) {
+			System.out.println("Error posting discussion: " + e.getMessage());
 		}
 	}
 
@@ -145,6 +166,17 @@ public class GroupsManager {
 			}
 		}
 		return discussions;
+	}
+
+	public static void postDiscussion(String groupName, String username, String content) throws SQLException {
+		String sql = "INSERT INTO group_discussions (group_id, user_id, content) " + "SELECT g.group_id, u.user_id, ? "
+				+ "FROM groups g, users u " + "WHERE g.group_name = ? AND u.username = ?";
+		try (Connection conn = DataBaseManager.connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, content);
+			pstmt.setString(2, groupName);
+			pstmt.setString(3, username);
+			pstmt.executeUpdate();
+		}
 	}
 
 	public static List<String> getAllGroups() throws SQLException {
