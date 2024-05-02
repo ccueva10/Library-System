@@ -203,8 +203,7 @@ public class DataBaseManager {
 		List<Book> favoriteBooks = new ArrayList<>();
 		String[] bookISBNs = input.split(",");
 
-		// Directly add the user's input to the favorite books list without checking
-		// against the library
+		// Directly add the user's input to the favorite books list without checking against the library
 		for (String ISBN : bookISBNs) {
 			Book book = new Book(ISBN.trim(), "", "", ""); // Create a new Book object with the ISBN provided by the
 															// user
